@@ -1,0 +1,43 @@
+{
+	"ImportPath": "github.com/oscarzhao/image-sync",
+	"GoVersion": "go1.6",
+	"GodepVersion": "v74",
+	"Deps": [
+		{
+			"ImportPath": "github.com/Sirupsen/logrus",
+			"Comment": "v0.8.6-1-g8bca266",
+			"Rev": "8bca2664072173a3c71db4c28ca8d304079b1787"
+		},
+		{
+			"ImportPath": "github.com/docker/distribution/digest",
+			"Comment": "v2.1.1",
+			"Rev": "44c7fb9e6e7e58e88d38d93b5f1f6da6a54d28ff"
+		},
+		{
+			"ImportPath": "github.com/docker/distribution/manifest",
+			"Comment": "v2.1.1",
+			"Rev": "44c7fb9e6e7e58e88d38d93b5f1f6da6a54d28ff"
+		},
+		{
+			"ImportPath": "github.com/docker/docker/pkg/tarsum",
+			"Comment": "v1.12.0-rc2",
+			"Rev": "906eacd586853e9e79ea2bd5df7e13ba8a28cd60"
+		},
+		{
+			"ImportPath": "github.com/docker/libtrust",
+			"Rev": "9cbd2a1374f46905c68a4eb3694a130610adc62a"
+		},
+		{
+			"ImportPath": "github.com/golang/glog",
+			"Rev": "23def4e6c14b4da8ac2ed8007337bc5eb5007998"
+		},
+		{
+			"ImportPath": "github.com/oscarzhao/docker-reg-client/registry",
+			"Rev": "942a3960b254ae4be7ecd5b2bc2b92e71b3e61d8"
+		},
+		{
+			"ImportPath": "github.com/oscarzhao/docker-registry-client/registry",
+			"Rev": "51ad703875abe814ee7a2b1fc70564d3c5b59718"
+		}
+	]
+}

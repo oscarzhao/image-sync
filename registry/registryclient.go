@@ -7,10 +7,10 @@ import (
 
 	"github.com/golang/glog"
 
-	"image-sync/dockerhub"
-
 	registryV1 "github.com/oscarzhao/docker-reg-client/registry" // v1
 	registryV2 "github.com/oscarzhao/docker-registry-client/registry"
+
+	"github.com/oscarzhao/image-sync/dockerhub"
 )
 
 type Client struct {
