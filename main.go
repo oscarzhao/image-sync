@@ -36,7 +36,7 @@ func (i Image) String() string {
 	if i.registry == "" {
 		return i.repo + "/" + i.tag
 	}
-	return i.registry + "/" + i.repo + "/" + i.tag
+	return i.registry + "/" + i.repo + ":" + i.tag
 }
 
 func init() {
