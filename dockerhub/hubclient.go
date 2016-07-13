@@ -48,7 +48,7 @@ type DockerTag struct {
 	Repository  int64       `json:"repository"`
 	Creator     int64       `json:"creator"`
 	LastUpdater int64       `json:"last_updater"`
-	LastUpdated time.Time   `json:"last_updated"`
+	LastUpdated string      `json:"last_updated"`
 	ImageID     interface{} `json:"image_id"`
 	V2          bool        `json:"v2"`
 	Platforms   []int       `json:"platforms"`

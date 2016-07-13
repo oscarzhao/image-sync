@@ -21,7 +21,7 @@ func TestSearchReposByUser(t *testing.T) {
 }
 
 func TestListTags(t *testing.T) {
-	repo := "alpine"
+	repo := "ubuntu"
 	tags, err := c.QueryImageTags(repo)
 
 	if err != nil {
