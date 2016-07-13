@@ -62,7 +62,7 @@ type DockerTagList struct {
 
 // SendGetRequest sends a request to certain url (basic auth)
 func SendGetRequest(url string) (bytes []byte, err error) {
-	httpClient := &http.Client{Transport: &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}, Timeout: 10 * time.Second}
+	httpClient := &http.Client{Transport: &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}, Timeout: 20 * time.Second}
 	request, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
@@ -87,7 +87,7 @@ func (c *DockerHubClient) SearchReposByUser(repoName string) ([]DockerImage, err
 	if arr := strings.Split(repoName, "/"); len(arr) > 1 {
 		return nil, errors.New("only allow repo user passed in")
 	}
-	if repoName == "" {
+	if repoName == "" || repoName == "docker_library" {
 		repoName = "library"
 	}
 	var images []DockerImage

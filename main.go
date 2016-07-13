@@ -49,7 +49,7 @@ func init() {
 	flag.StringVar(&dstRegistryVersion, "dst-registry-version", "v2", "the registry api version (often v2)")
 	flag.StringVar(&dstRepoPassword, "dst-repo-password", "xxx", "repo password, use to list repos at dst registry")
 
-	flag.StringVar(&repoOwner, "repo-owner", "docker_library", "repo owner, the user images are under")
+	flag.StringVar(&repoOwner, "repo-owner", "", "repo owner, the user images are under")
 	flag.Parse()
 
 	srcClient, _ = registry.NewClient("https", srcRegistry, srcRegistryVersion, repoOwner, srcRepoPassword)
@@ -67,6 +67,10 @@ func main() {
 	}
 
 	glog.V(4).Infof("repos got: %s\n", strings.Join(repoList, "\n"))
+
+	if repoOwner == "" {
+		repoOwner = "docker_library"
+	}
 
 	// fetch all tags of all repos under repoOwner
 	for _, repoName := range repoList {
