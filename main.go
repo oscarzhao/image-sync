@@ -92,8 +92,12 @@ func main() {
 	images2push := makeTag(imagePulled, dstRegistry)
 	imagePushed := pushImages(images2push)
 
-	for pushed := range imagePushed {
-		glog.V(2).Infof("image %s pushed\n", pushed)
+	for image := range imagePushed {
+		if _, stderr, err := dockerexec.DeleteImage(image.registry, image.repo, image.tag); err != nil {
+			glog.Errorf("image %s pushed, but delete fails, stderror:%s, error:%s\n", image, stderr, err)
+		} else {
+			glog.V(2).Infof("image %s pushed and deleted\n", image)
+		}
 	}
 	if len(listTagFailedRepos) > 0 {
 		glog.Errorf("the following repos, list tag operation fails:\n%s\n", strings.Join(listTagFailedRepos, ", "))
