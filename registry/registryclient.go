@@ -28,6 +28,7 @@ type Client struct {
 // NewClient creates a new registry client, default returns a docker hub client
 func NewClient(proto, registry, version, username, password string) (*Client, error) {
 	if registry == "" || version == "" || proto == "" || registry == "index.docker.io" {
+		glog.V(4).Infof("create a docker hub client, registry:%s\n", registry)
 		return &Client{
 			isHub:     true,
 			proto:     "https",
@@ -42,6 +43,7 @@ func NewClient(proto, registry, version, username, password string) (*Client, er
 		if err != nil {
 			return nil, err
 		}
+		glog.V(4).Infof("create a docker registry v1 client, registry:%s\n", registry)
 		return &Client{
 			isHub:     false,
 			proto:     proto,
@@ -54,6 +56,7 @@ func NewClient(proto, registry, version, username, password string) (*Client, er
 		if err != nil {
 			return nil, err
 		}
+		glog.V(4).Infof("create a docker registry v2 client, registry:%s\n", registry)
 		return &Client{
 			isHub:       false,
 			proto:       proto,

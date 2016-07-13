@@ -9,6 +9,8 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/golang/glog"
 )
 
 const (
@@ -105,6 +107,7 @@ func (c *DockerHubClient) SearchReposByUser(repoName string) ([]DockerImage, err
 		if err != nil {
 			return nil, err
 		}
+		glog.V(6).Infof("repo list got, url:%s, count:%d, response:%#v\n", url, len(imageList.Results), imageList.Results)
 		for _, image := range imageList.Results {
 			if repoName == "library" {
 				if image.IsOfficial {
