@@ -1,12 +1,19 @@
 package dockerhub
 
 import (
+	"flag"
 	"testing"
 )
 
 var (
 	c = &DockerHubClient{}
 )
+
+func init() {
+	flag.Set("alsologtostderr", "true")
+	flag.Set("v", "7")
+	flag.Parse()
+}
 
 func TestSearchReposByUser(t *testing.T) {
 	user := "oscarzhao"

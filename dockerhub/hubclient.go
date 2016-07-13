@@ -63,24 +63,24 @@ type DockerTagList struct {
 }
 
 // SendGetRequest sends a request to certain url (basic auth)
-func SendGetRequest(url string) (bytes []byte, err error) {
+func SendGetRequest(url string) (bytes []byte, statusCode int, err error) {
 	httpClient := &http.Client{Transport: &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}, Timeout: 20 * time.Second}
 	request, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		return nil, err
+		return nil, 400, err
 	}
 
 	resp, err := httpClient.Do(request)
 	if err != nil {
-		return nil, err
+		return nil, resp.StatusCode, err
 	}
 	defer resp.Body.Close()
 
 	bytes, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, err
+		return nil, resp.StatusCode, err
 	}
-	return bytes, nil
+	return bytes, resp.StatusCode, nil
 }
 
 // SearchReposByUser returns a list of images in registry
@@ -99,9 +99,16 @@ func (c *DockerHubClient) SearchReposByUser(repoName string) ([]DockerImage, err
 	for {
 		var imageList DockerImageList
 		url := fmt.Sprintf("%s/%s/search/repositories/?page=%d&query=%s&page_size=%d", DockerHubURL, DockerHubVersion, page, repoName, pageSize)
-		bytes, err := SendGetRequest(url)
+		bytes, statusCode, err := SendGetRequest(url)
 		if err != nil {
 			return nil, err
+		}
+		if statusCode == 404 {
+			break
+		}
+		if statusCode >= 400 {
+			glog.Errorf("url: %s, statusCode: %d, resp:%s\n", url, statusCode, bytes)
+			return images, err
 		}
 		err = json.Unmarshal(bytes, &imageList)
 		if err != nil {
@@ -143,10 +150,16 @@ func (c *DockerHubClient) QueryImageTags(repoName string) ([]DockerTag, error) {
 	page := 1
 	for {
 		url := fmt.Sprintf("%s/%s/repositories/%s/tags/?page=%d&page_size=%d", DockerHubURL, DockerHubVersion, repoName, page, pageSize)
-		bytes, err := SendGetRequest(url)
+		bytes, statusCode, err := SendGetRequest(url)
 		if err != nil {
 			glog.Errorf("fails to fetch tags, url:%s, error:%s\n", url, err)
 			return nil, err
+		}
+		if statusCode == 404 {
+			break
+		}
+		if statusCode >= 400 {
+			return tags, err
 		}
 		err = json.Unmarshal(bytes, &tagList)
 		if err != nil {
