@@ -89,15 +89,15 @@ func (c *DockerHubClient) SearchReposByUser(repoName string) ([]DockerImage, err
 	if arr := strings.Split(repoName, "/"); len(arr) > 1 {
 		return nil, errors.New("only allow repo user passed in")
 	}
-	if repoName == "" || repoName == "docker_library" {
+	if repoName == "" {
 		repoName = "library"
 	}
 	var images []DockerImage
-	var imageList DockerImageList
 
 	pageSize := 20
 	page := 1
 	for {
+		var imageList DockerImageList
 		url := fmt.Sprintf("%s/%s/search/repositories/?page=%d&query=%s&page_size=%d", DockerHubURL, DockerHubVersion, page, repoName, pageSize)
 		bytes, err := SendGetRequest(url)
 		if err != nil {
@@ -145,10 +145,12 @@ func (c *DockerHubClient) QueryImageTags(repoName string) ([]DockerTag, error) {
 		url := fmt.Sprintf("%s/%s/repositories/%s/tags/?page=%d&page_size=%d", DockerHubURL, DockerHubVersion, repoName, page, pageSize)
 		bytes, err := SendGetRequest(url)
 		if err != nil {
+			glog.Errorf("fails to fetch tags, url:%s, error:%s\n", url, err)
 			return nil, err
 		}
 		err = json.Unmarshal(bytes, &tagList)
 		if err != nil {
+			glog.Errorf("invalid response, url:%s, error:%s\n", url, err)
 			return nil, err
 		}
 
