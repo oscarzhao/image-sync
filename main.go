@@ -23,7 +23,8 @@ var (
 	dstRegistryVersion string
 	dstRepoPassword    string
 
-	repoOwner string
+	srcRepoOwner string
+	dstRepoOwner string
 )
 
 type Image struct {
@@ -49,30 +50,32 @@ func init() {
 	flag.StringVar(&dstRegistryVersion, "dst-registry-version", "v2", "the registry api version (often v2)")
 	flag.StringVar(&dstRepoPassword, "dst-repo-password", "xxx", "repo password, use to list repos at dst registry")
 
-	flag.StringVar(&repoOwner, "repo-owner", "", "repo owner, the user images are under")
+	flag.StringVar(&srcRepoOwner, "repo-owner", "", "repo owner, the user images are under for the source registry")
+	flag.StringVar(&dstRepoOwner, "dst-repo-owner", "docker_library", "repo owner, the user images are under for the target registry")
 	flag.Parse()
 
-	srcClient, _ = registry.NewClient("https", srcRegistry, srcRegistryVersion, repoOwner, srcRepoPassword)
-	dstClient, _ = registry.NewClient("https", dstRegistry, dstRegistryVersion, repoOwner, dstRepoPassword)
+	if srcRepoOwner == "" || srcRepoOwner == "library" {
+		srcRepoOwner = "library" // empty is library
+		dstRepoOwner = "docker_library"
+	}
+
+	srcClient, _ = registry.NewClient("https", srcRegistry, srcRegistryVersion, srcRepoOwner, srcRepoPassword)
+	dstClient, _ = registry.NewClient("https", dstRegistry, dstRegistryVersion, dstRepoOwner, dstRepoPassword)
 }
 
 func main() {
 	srcRepo2Tags := make(map[string][]string)
 	listTagFailedRepos := make([]string, 0, 4)
 
-	repoList, err := srcClient.ListRepositories(repoOwner)
+	repoList, err := srcClient.ListRepositories(srcRepoOwner)
 	if err != nil {
-		glog.Errorf("list repos (%s) failed, error: %s\n", repoOwner, err)
+		glog.Errorf("list repos (%s) failed, error: %s\n", srcRepoOwner, err)
 		return
 	}
 
 	glog.V(4).Infof("repos got: %s\n", strings.Join(repoList, "\n"))
 
-	if repoOwner == "" {
-		repoOwner = "docker_library"
-	}
-
-	// fetch all tags of all repos under repoOwner
+	// fetch all tags of all repos under srcRepoOwner
 	for _, repoName := range repoList {
 		tags, err := srcClient.ListTags(repoName)
 		if err != nil {
@@ -150,7 +153,11 @@ func makeTag(images <-chan Image, dstRegistry string) <-chan Image {
 	go func() {
 		for image := range images {
 			// check if create tag success
-			dstImg := Image{dstRegistry, image.repo, image.tag}
+			dstRepo := image.repo
+			if image.registry == "" {
+				dstRepo = dstRepoOwner + "/" + dstRepo
+			}
+			dstImg := Image{dstRegistry, dstRepo, image.tag}
 			if _, stderr, err := dockerexec.MakeTag(image.String(), dstImg.String()); err == nil {
 				success <- dstImg
 			} else {
