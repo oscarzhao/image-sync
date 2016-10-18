@@ -47,6 +47,8 @@ func main() {
 			continue
 		}
 
+		log.Printf("%s pulled\n", img)
+
 		dstImg := strings.Replace(img, src, dst, -1)
 		stdout, stderr, err = cmdExec([]string{"docker", "tag", img, dstImg})
 		if err != nil {
@@ -54,11 +56,15 @@ func main() {
 			continue
 		}
 
+		log.Printf("%s created\n", dstImg)
+
 		stdout, stderr, err = cmdExec([]string{"docker", "push", dstImg})
 		if err != nil {
 			log.Printf("push image %s fails, error:%s, stdout:%s, stderr:%s\n", dstImg, err, stdout, stderr)
 			continue
 		}
+
+		log.Printf("%s pushed\n", dstImg)
 
 		stdout, stderr, err = cmdExec([]string{"docker", "rmi", dstImg})
 		if err != nil {
@@ -66,11 +72,16 @@ func main() {
 			continue
 		}
 
+		log.Printf("%s deleted\n", dstImg)
+
 		stdout, stderr, err = cmdExec([]string{"docker", "rmi", img})
 		if err != nil {
 			log.Printf("rm image %s fails, error:%s, stdout:%s, stderr:%s\n", img, err, stdout, stderr)
 			continue
 		}
+
+		log.Printf("%s deleted\n", img)
+
 	}
 }
 
