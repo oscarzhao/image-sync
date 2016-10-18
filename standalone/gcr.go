@@ -20,6 +20,7 @@ func init() {
 }
 
 func main() {
+	log.Printf("got configfile:%s\n", imageFile)
 	rawBytes, err := ioutil.ReadFile(imageFile)
 	if err != nil {
 		log.Fatalf("read file %s fails, error:%v\n", imageFile, err)
@@ -36,6 +37,8 @@ func main() {
 	if len(images) == 0 {
 		log.Fatalf("invalid config file, no gcr.io/google_containers images\n")
 	}
+
+	log.Printf("images to push: %#v\n", images)
 
 	for _, img := range images {
 		stdout, stderr, err := cmdExec([]string{"docker", "pull", img})
