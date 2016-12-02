@@ -11,7 +11,7 @@ godep go build
 # synchronize gcr.io/google_containers to index.tenxcloud.com/google_containers (gcr.io registry version is v1)
 nohup ./image-sync \
     --src-registry=gcr.io \
-    -src-registry-version=v1 \
+    --src-registry-version=v1 \
     --dst-registry=index.tenxcloud.com \
     --dst-registry-version=v2 \
     --dst-repo-password=xxx \
